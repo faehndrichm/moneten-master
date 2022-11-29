@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:simple_budget/providers.dart';
 import 'package:simple_budget/settings.dart';
-
 import 'helper.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
