@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:simple_budget/providers.dart';
-import 'package:simple_budget/settings.dart';
-import 'helper.dart';
+import 'package:simple_budget/screens/settings_screen.dart';
+import '../helper.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key, required this.title}) : super(key: key);
@@ -21,7 +21,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var cash = ref.watch(cashProvider);
-    limitController.text = cash.limit.toString();
+    var dailyLimit = ref.watch(limitProvider);
+    limitController.text = dailyLimit.value.toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +60,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             controller: pageViewController,
             reverse: true,
             itemBuilder: (BuildContext context, int index) {
-              int limit = cash.limit;
+              int limit = dailyLimit.value;
               int spentToday = cash.cashPerDay[toDateString(
                       DateTime.now().add(Duration(days: -index)))] ??
                   0;
@@ -67,6 +68,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               print(toDateString(DateTime.now().add(Duration(days: -index))));
               print("limit $limit");
               print("spentToday $spentToday");
+              print("$index");
+
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -178,7 +181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             ),
                                           ),
                                           Text(
-                                            '${cash.cashPerDay[toDateString(DateTime.now().add(Duration(days: -index)))] ?? 0} €',
+                                            '${cash.cashPerDay[toDateString(DateTime.now().add(Duration(days: -index)))] ?? 0}€ / $limit€',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline4,

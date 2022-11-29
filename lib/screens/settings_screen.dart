@@ -11,6 +11,8 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final limitController = TextEditingController();
+    limitController.text =
+                ref.read(limitProvider).value.toString();
 
     final textField = TextField(
         style: const TextStyle(fontSize: 28),
