@@ -19,10 +19,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         fontFamily: 'Poppins',
         backgroundColor: Colors.grey[50],
-        textTheme: Theme.of(context).textTheme.apply(
-              bodyColor: Colors.grey[700], //<-- SEE HERE
-              displayColor: Colors.grey[700], //<-- SEE HERE
-            ),
+        textTheme: const TextTheme(
+          bodyText2: TextStyle(fontSize: 20),
+        )
+        
+        ,
       ),
       home: const HomeScreen(title: 'Moneten Master'),
     );

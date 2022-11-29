@@ -60,15 +60,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             controller: pageViewController,
             reverse: true,
             itemBuilder: (BuildContext context, int index) {
-              int limit = dailyLimit.value;
-              int spentToday = cash.cashPerDay[toDateString(
-                      DateTime.now().add(Duration(days: -index)))] ??
+              DateTime selectedDate = DateTime.now().add(Duration(days: -index));
+              int spentToday = cash.cashPerDay[toDateString(selectedDate)] ??
                   0;
+              int currentDayOfMonth = selectedDate.day;
+              int limit = dailyLimit.value + ref.read(cashProvider.notifier).getRemainingCashFromPreviousDays(dailyLimit, selectedDate);
+              int progressLimit = limit >= 0 ? limit : 0;
+              double progressIndicatorValue = progressLimit > 0 ? (spentToday / progressLimit) : 100;
 
-              print(toDateString(DateTime.now().add(Duration(days: -index))));
-              print("limit $limit");
-              print("spentToday $spentToday");
-              print("$index");
+              Color progressIndicatorColor = Colors.lightGreen;
+
+              if(spentToday > limit) {
+                  progressIndicatorColor = Colors.red;
+              }
+
+              ref.read(dayProvider.notifier).setCurrentDay(selectedDate);
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,6 +84,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          if (currentDayOfMonth == 1)
+                            const SizedBox(
+                              width: 64,
+                            ),
+                          if(currentDayOfMonth != 1)
                           IconButton(
                             onPressed: () {
                               pageViewController.animateToPage(index + 1,
@@ -91,8 +102,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           Text(
-                            toDateStringUI(
-                                DateTime.now().add(Duration(days: -index))),
+                            toDateStringUI(selectedDate),
                             style: const TextStyle(fontSize: 28),
                           ),
                           if (index <= 0)
@@ -173,18 +183,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             height: 200,
                                             width: 200,
                                             child: CircularProgressIndicator(
-                                              color: Colors.grey.shade700,
+                                              color: progressIndicatorColor,
                                               backgroundColor:
                                                   Colors.grey.shade100,
                                               strokeWidth: 30,
-                                              value: spentToday / limit,
+                                              value: progressIndicatorValue,
                                             ),
                                           ),
                                           Text(
-                                            '${cash.cashPerDay[toDateString(DateTime.now().add(Duration(days: -index)))] ?? 0}€ / $limit€',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline4,
+                                            '${cash.cashPerDay[toDateString(selectedDate)] ?? 0}€ / $limit€',
+                                            style: Theme.of(context).textTheme.bodyText2,
                                           ),
                                         ],
                                       ),
@@ -223,7 +231,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         ElevatedButton(
                           onPressed: () =>
-                              ref.read(cashProvider.notifier).addCash(1),
+                              ref.read(cashProvider.notifier).addCash(1, ref.read(dayProvider.notifier).getCurrentDay()),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -236,7 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () =>
-                              ref.read(cashProvider.notifier).addCash(5),
+                              ref.read(cashProvider.notifier).addCash(5, ref.read(dayProvider.notifier).getCurrentDay()),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -257,7 +265,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         ElevatedButton(
                           onPressed: () =>
-                              ref.read(cashProvider.notifier).addCash(10),
+                              ref.read(cashProvider.notifier).addCash(10, ref.read(dayProvider.notifier).getCurrentDay()),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -270,7 +278,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () =>
-                              ref.read(cashProvider.notifier).addCash(50),
+                              ref.read(cashProvider.notifier).addCash(50, ref.read(dayProvider.notifier).getCurrentDay()),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
