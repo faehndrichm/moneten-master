@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:simple_budget/providers.dart';
+import 'package:simple_budget/settings.dart';
 
 import 'helper.dart';
 
@@ -27,12 +28,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: Colors.lightGreen,
         title: Text(
           widget.title,
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 28, color: Colors.grey.shade700),
+          style: TextStyle(
+              fontFamily: 'Poppins', fontSize: 28, color: Colors.grey.shade700),
         ),
       ),
+      drawer: Drawer(
+          backgroundColor: Colors.white,
+          child: ListView(padding: EdgeInsets.zero, children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Moneten Master'),
+            ),
+            ListTile(
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Update the state of the app
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                  // Then close the drawer
+                })
+          ])),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -41,7 +61,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             reverse: true,
             itemBuilder: (BuildContext context, int index) {
               int limit = cash.limit;
-              int spentToday = cash.cashPerDay[toDateString(DateTime.now().add(Duration(days: -index)))] ?? 0;
+              int spentToday = cash.cashPerDay[toDateString(
+                      DateTime.now().add(Duration(days: -index)))] ??
+                  0;
 
               print(toDateString(DateTime.now().add(Duration(days: -index))));
               print("limit $limit");
@@ -57,7 +79,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           IconButton(
                             onPressed: () {
                               pageViewController.animateToPage(index + 1,
-                                  duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOut);
                             },
                             icon: HeroIcon(
                               HeroIcons.arrowLeft,
@@ -66,7 +89,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           Text(
-                            toDateStringUI(DateTime.now().add(Duration(days: -index))),
+                            toDateStringUI(
+                                DateTime.now().add(Duration(days: -index))),
                             style: const TextStyle(fontSize: 28),
                           ),
                           if (index <= 0)
@@ -77,7 +101,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             IconButton(
                               onPressed: () {
                                 pageViewController.animateToPage(index - 1,
-                                    duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeOut);
                               },
                               icon: HeroIcon(
                                 HeroIcons.arrowRight,
@@ -90,7 +115,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       IconButton(
                         onPressed: () {
                           pageViewController.animateToPage(0,
-                              duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut);
                         },
                         icon: HeroIcon(
                           HeroIcons.calendar,
@@ -109,44 +135,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(top: 32.0, bottom: 32.0),
+                            padding:
+                                const EdgeInsets.only(top: 32.0, bottom: 32.0),
                             child: Material(
                               borderRadius: BorderRadius.circular(10),
                               elevation: 0.0,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
-                                  children: [
-                                    SizedBox(
-                                      width: 120,
-                                      child: TextField(
-                                          style: const TextStyle(fontSize: 28),
-                                          controller: limitController,
-                                          keyboardType: TextInputType.number,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Limit',
-                                          ),
-                                          onSubmitted: (value) {
-                                            int? limit = int.tryParse(value);
-                                            if (limit != null && limit > 0) {
-                                              ref.read(cashProvider.notifier).setLimit(limit);
-                                            } else {
-                                              limitController.text = ref.read(cashProvider).limit.toString(); //reset
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  duration: const Duration(seconds: 20),
-                                                  action: SnackBarAction(
-                                                    label: 'OK',
-                                                    onPressed: () {},
-                                                  ),
-                                                  content: const Text("Na das geht aber nicht!"),
-                                                ),
-                                              );
-                                            }
-                                          }),
-                                    ),
-                                  ],
+                                  children: [],
                                 ),
                               ),
                             ),
@@ -175,14 +172,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             width: 200,
                                             child: CircularProgressIndicator(
                                               color: Colors.grey.shade700,
-                                              backgroundColor: Colors.grey.shade100,
+                                              backgroundColor:
+                                                  Colors.grey.shade100,
                                               strokeWidth: 30,
                                               value: spentToday / limit,
                                             ),
                                           ),
                                           Text(
                                             '${cash.cashPerDay[toDateString(DateTime.now().add(Duration(days: -index)))] ?? 0} €',
-                                            style: Theme.of(context).textTheme.headline4,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline4,
                                           ),
                                         ],
                                       ),
@@ -203,6 +203,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        // TODO create new class for this
         backgroundColor: Colors.grey.shade700,
         onPressed: () {
           showModalBottomSheet(
@@ -219,25 +220,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () => ref.read(cashProvider.notifier).addCash(1),
+                          onPressed: () =>
+                              ref.read(cashProvider.notifier).addCash(1),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
                           child: const Text(
                             '+1€',
-                            style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () => ref.read(cashProvider.notifier).addCash(5),
+                          onPressed: () =>
+                              ref.read(cashProvider.notifier).addCash(5),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
                           child: const Text(
                             '+5€',
-                            style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
                         ),
                       ],
@@ -249,25 +254,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () => ref.read(cashProvider.notifier).addCash(10),
+                          onPressed: () =>
+                              ref.read(cashProvider.notifier).addCash(10),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
                           child: const Text(
                             '+10€',
-                            style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () => ref.read(cashProvider.notifier).addCash(50),
+                          onPressed: () =>
+                              ref.read(cashProvider.notifier).addCash(50),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
                           child: const Text(
                             '+50€',
-                            style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
                         ),
                       ],
