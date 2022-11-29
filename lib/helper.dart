@@ -9,3 +9,7 @@ String toDateStringUI(DateTime date) {
   final f = DateFormat('dd.MM.yyyy');
   return f.format(date);
 }
+
+DateTime fromDateString(String date) {
+  return DateTime.parse(date);
+}
