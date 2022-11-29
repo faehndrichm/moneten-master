@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simple_budget/limit.dart';
 
-import 'cash.dart';
+import 'entities/limit.dart';
+import 'entities/cash.dart';
 import 'helper.dart';
 
 final cashProvider = StateNotifierProvider<CashNotifier, Cash>((ref) {
@@ -31,7 +31,7 @@ class CashNotifier extends StateNotifier<Cash> {
     var cashPerDay = state.cashPerDay;
     String key = toDateString(DateTime.now());
     cashPerDay[key] = amount + (cashPerDay[key] ?? 0);
-    state = Cash(cashPerDay: cashPerDay, limit: state.limit);
+    state = Cash(cashPerDay: cashPerDay);
   }
 
   removeCash(int amount) {}
