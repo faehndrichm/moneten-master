@@ -15,7 +15,8 @@ class SetValueScreen extends ConsumerWidget {
     final valueController = TextEditingController();
     final currentDate = ref.read(dayProvider).currentDate;
 
-    valueController.text = "${ref.read(cashProvider).cashPerDay[toDateString(currentDate)]}";
+    valueController.text =
+        "${ref.read(cashProvider).cashPerDay[toDateString(currentDate)] ?? 0}";
 
     String selectedDate = toDateStringUI(currentDate);
 
@@ -23,18 +24,21 @@ class SetValueScreen extends ConsumerWidget {
         style: const TextStyle(fontSize: 28),
         controller: valueController,
         keyboardType: TextInputType.number,
+        autofocus: true,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: 'Value for $selectedDate',
         ),
         onSubmitted: (value) {
-          int? amount = int.tryParse(value);
+          double? amount = double.tryParse(value);
           if (amount != null) {
-            ref.read(cashProvider.notifier).setValue(ref.read(dayProvider).currentDate, amount);
+            ref
+                .read(cashProvider.notifier)
+                .setValue(ref.read(dayProvider).currentDate, amount);
             Navigator.pop(context);
           } else {
             valueController.text =
-                ref.read(limitProvider).value.toString(); //reset
+                ref.read(limitProvider).value.toStringAsFixed(2); //reset
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 duration: const Duration(seconds: 20),
