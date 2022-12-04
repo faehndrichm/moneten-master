@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:simple_budget/providers.dart';
+import 'package:simple_budget/screens/add_value_screen.dart';
 import 'package:simple_budget/screens/set_value_screen.dart';
 import 'package:simple_budget/screens/settings_screen.dart';
 import '../helper.dart';
@@ -14,7 +15,12 @@ class HomeScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
+
 // TODO implement setting so user can decide from which date on the money_spent should be counted, i.e. start at 12.8.2022 to start counting
+
+
+// TODO set currency
+
 
 // TODO implement month selection
 
@@ -275,7 +281,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           onPressed: () => ref
                               .read(cashProvider.notifier)
                               .addCash(
-                                  5,
+                                  2,
                                   ref
                                       .read(dayProvider.notifier)
                                       .getCurrentDay()),
@@ -284,7 +290,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             shape: const CircleBorder(),
                           ),
                           child: const Text(
-                            '+5€',
+                            '+2€',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -301,6 +307,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           onPressed: () => ref
                               .read(cashProvider.notifier)
                               .addCash(
+                                  5,
+                                  ref
+                                      .read(dayProvider.notifier)
+                                      .getCurrentDay()),
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(70, 70),
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Text(
+                            '+5€',
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => ref
+                              .read(cashProvider.notifier)
+                              .addCash(
                                   10,
                                   ref
                                       .read(dayProvider.notifier)
@@ -311,6 +335,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           child: const Text(
                             '+10€',
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => ref
+                              .read(cashProvider.notifier)
+                              .addCash(
+                                  20,
+                                  ref
+                                      .read(dayProvider.notifier)
+                                      .getCurrentDay()),
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(70, 70),
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Text(
+                            '+20€',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -336,6 +386,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddValueScreen()))
+                          },
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(70, 70),
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Text(
+                            '+',
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               );
             },
