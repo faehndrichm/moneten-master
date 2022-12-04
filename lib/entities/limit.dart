@@ -1,4 +1,6 @@
+import 'dart:ffi';
+
 class Limit {
-  int value;
+  double value;
   Limit({required this.value}); 
 }

@@ -1,4 +1,6 @@
+import 'dart:ffi';
+
 class Cash {
-  Map<String, int> cashPerDay;
+  Map<String, double> cashPerDay;
   Cash({required this.cashPerDay});
 }

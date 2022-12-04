@@ -22,13 +22,14 @@ class AddValueScreen extends ConsumerWidget {
     final textField = TextField(
         style: const TextStyle(fontSize: 28),
         controller: valueController,
+        autofocus: true,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: 'Cash to add for $selectedDate',
         ),
         onSubmitted: (value) {
-          int? amount = int.tryParse(value);
+          double? amount = double.tryParse(value);
           if (amount != null) {
             ref
                 .read(cashProvider.notifier)

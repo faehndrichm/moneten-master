@@ -51,7 +51,7 @@ class LimitNotifier extends StateNotifier<Limit> {
 
   LimitNotifier() : super(Limit(value: 50));
 
-  setLimit(int value) async {
+  setLimit(double value) async {
     state = Limit(value: value);
     saveLimitToStandardPersistence(state);
   }
@@ -81,8 +81,8 @@ class CashNotifier extends StateNotifier<Cash> {
 
   CashNotifier() : super(Cash(cashPerDay: {}));
 
-  int getRemainingCashFromPreviousDays(Limit limit, DateTime forDay) {
-    int remaining = 0;
+  double getRemainingCashFromPreviousDays(Limit limit, DateTime forDay) {
+    double remaining = 0;
 
     DateTime comparisonDate = forDay.add(const Duration(days: -1));
     // If only current month should be counted then there needs to be a isAfter also
@@ -102,7 +102,7 @@ class CashNotifier extends StateNotifier<Cash> {
     return remaining;
   }
 
-  setValue(DateTime date, int amount) {
+  setValue(DateTime date, double amount) {
     Cash temp = Cash(cashPerDay: state.cashPerDay);
     temp.cashPerDay[toDateString(date)] = amount;
     setState(temp);
@@ -113,7 +113,7 @@ class CashNotifier extends StateNotifier<Cash> {
     saveCashToStandardPersistence(state);
   }
 
-  addCash(int amount, DateTime forDay) {
+  addCash(double amount, DateTime forDay) {
     var cashPerDay = state.cashPerDay;
     String key = toDateString(forDay);
     cashPerDay[key] = amount + (cashPerDay[key] ?? 0);

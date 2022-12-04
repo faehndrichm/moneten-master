@@ -23,7 +23,7 @@ class SettingsScreen extends ConsumerWidget {
           labelText: 'Limit',
         ),
         onSubmitted: (value) {
-          int? limit = int.tryParse(value);
+          double? limit = double.tryParse(value);
           if (limit != null && limit > 0) {
             ref.read(limitProvider.notifier).setLimit(limit);
             Navigator.pop(context);

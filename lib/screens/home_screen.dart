@@ -76,14 +76,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemBuilder: (BuildContext context, int index) {
               DateTime selectedDate =
                   DateTime.now().add(Duration(days: -index));
-              int spentToday = cash.cashPerDay[toDateString(selectedDate)] ?? 0;
+              double spentToday = cash.cashPerDay[toDateString(selectedDate)] ?? 0;
               int currentDayOfMonth = selectedDate.day;
-              int limit = dailyLimit.value +
+              double limit = dailyLimit.value +
                   ref
                       .read(cashProvider.notifier)
                       .getRemainingCashFromPreviousDays(
                           dailyLimit, selectedDate);
-              int progressLimit = limit >= 0 ? limit : 0;
+              double progressLimit = limit >= 0 ? limit : 0;
               double progressIndicatorValue =
                   progressLimit > 0 ? (spentToday / progressLimit) : 100;
 
@@ -219,7 +219,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                 // Then close the drawer
                                               },
                                               child: Text(
-                                                '${cash.cashPerDay[toDateString(selectedDate)] ?? 0}€ / $limit€',
+                                                '${cash.cashPerDay[toDateString(selectedDate)]?.toStringAsFixed(2) ?? 0}€ / ${limit.toStringAsFixed(2)}€',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyText2,

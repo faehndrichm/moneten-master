@@ -8,19 +8,29 @@ import 'package:simple_budget/persistence/settings_persistence_interface.dart';
 
 class SettingsPersistenceSharedPrefs implements SettingsPersistenceInterface {
   static const String limitPersistenceName = 'money_limit';
-  static const int standardLimit = 50;
+  static const double standardLimit = 50;
   static const String cashPersistenceName = 'cash_per_day';
 
   @override
   void saveLimit(Limit limit) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(limitPersistenceName, limit.value);
+    await prefs.setDouble(limitPersistenceName, limit.value);
   }
 
   @override
   Future<Limit> loadLimit() async {
     final prefs = await SharedPreferences.getInstance();
-    return Limit(value: prefs.getInt(limitPersistenceName) ?? standardLimit);
+    
+    Limit ret = Limit(value: standardLimit);
+
+    try {
+      ret = Limit(value: prefs.getDouble(limitPersistenceName) ?? standardLimit);
+    }
+    catch(_) {
+     // do nothing 
+    }
+
+    return ret;
   }
 
   @override
@@ -36,10 +46,15 @@ class SettingsPersistenceSharedPrefs implements SettingsPersistenceInterface {
     final prefs = await SharedPreferences.getInstance();
     String cashPerDayJsonized = prefs.getString(cashPersistenceName) ?? "";
 
-    Map<String, int> cashPerDay = {};
+    Map<String, double> cashPerDay = {};
 
     if(cashPerDayJsonized != "") {
-      cashPerDay = Map<String, int>.from(const JsonDecoder().convert(cashPerDayJsonized));
+      try {
+        cashPerDay = Map<String, double>.from(const JsonDecoder().convert(cashPerDayJsonized));
+      }
+      catch (_) {
+        cashPerDay = {};
+      }
     }
 
     return Cash(cashPerDay: cashPerDay);
