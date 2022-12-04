@@ -1,23 +1,37 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_budget/persistence/settings_persistence.dart';
+import 'package:simple_budget/persistence/settings_persistence_interface.dart';
 
 import 'entities/limit.dart';
 import 'entities/cash.dart';
 import 'entities/day.dart';
 import 'helper.dart';
 
+bool firstCashStart = true;
+bool firstLimitStart = true;
 
 final cashProvider = StateNotifierProvider<CashNotifier, Cash>((ref) {
-  return CashNotifier();
+  var ret = CashNotifier();
+  if (firstCashStart) {
+    ret.loadCashFromStandardPersistence();
+    firstCashStart = false;
+  }
+  return ret;
 });
 
 final limitProvider = StateNotifierProvider<LimitNotifier, Limit>((ref) {
-  return LimitNotifier();
+  var ret = LimitNotifier();
+  if (firstLimitStart) {
+    ret.loadLimitFromStandardPersistence();
+    firstLimitStart = false;
+  }
+  return ret;
 });
 
 final dayProvider = StateNotifierProvider<DayNotifier, Day>((ref) {
   return DayNotifier();
 });
-
 
 class DayNotifier extends StateNotifier<Day> {
   DayNotifier() : super(Day(currentDate: DateTime.now()));
@@ -32,38 +46,65 @@ class DayNotifier extends StateNotifier<Day> {
 }
 
 class LimitNotifier extends StateNotifier<Limit> {
- LimitNotifier() : super(Limit(value: 50));
+  SettingsPersistenceInterface standardPersistenceInterface =
+      SettingsPersistenceSharedPrefs();
 
- setLimit(int value) {
-  state = Limit(value: value);
- }
+  LimitNotifier() : super(Limit(value: 50));
+
+  setLimit(int value) async {
+    state = Limit(value: value);
+    saveLimitToStandardPersistence(state);
+  }
+
+  saveLimitToStandardPersistence(Limit limit) async {
+    await saveLimitToPersistence(standardPersistenceInterface, limit);
+  }
+
+  saveLimitToPersistence(
+      SettingsPersistenceInterface persistenceInterface, Limit limit) async {
+    persistenceInterface.saveLimit(limit);
+  }
+
+  loadLimitFromStandardPersistence() async {
+    await loadLimitFromPersistence(standardPersistenceInterface);
+  }
+
+  loadLimitFromPersistence(
+      SettingsPersistenceInterface persistenceInterface) async {
+    state = await persistenceInterface.loadLimit();
+  }
 }
 
 class CashNotifier extends StateNotifier<Cash> {
-  CashNotifier() : super(Cash(cashPerDay: {"2022-11-25": 60, "2022-11-24": 70, "2022-11-23": 80}));
+  SettingsPersistenceInterface standardPersistenceInterface =
+      SettingsPersistenceSharedPrefs();
 
-    int getRemainingCashFromPreviousDays(Limit limit, DateTime forDay) {
-      int remaining = 0;
+  CashNotifier() : super(Cash(cashPerDay: {}));
 
-      DateTime comparisonDate = forDay.add(const Duration(days: -1));
+  int getRemainingCashFromPreviousDays(Limit limit, DateTime forDay) {
+    int remaining = 0;
 
-      var datesBefore = state.cashPerDay.keys.where((element) => DateTime.parse(element).isBefore(comparisonDate));
-      for (var day in datesBefore) {
-        remaining += limit.value - (state.cashPerDay[day] ?? 0);
+    DateTime comparisonDate = forDay.add(const Duration(days: -1));
+    // If only current month should be counted then there needs to be a isAfter also
+    var datesBefore = state.cashPerDay.keys
+        .where((element) => DateTime.parse(element).isBefore(comparisonDate));
+    for (var day in datesBefore) {
+      remaining += limit.value - (state.cashPerDay[day] ?? 0);
+    }
+
+    for (int i = 1; i < forDay.day; i++) {
+      String dateString = toDateString(DateTime(forDay.year, forDay.month, i));
+      if (state.cashPerDay.containsKey(dateString)) {
+        continue;
       }
-
-      for(int i = 1; i < forDay.day; i++) {
-        String dateString = toDateString(DateTime(forDay.year, forDay.month, i));
-        if(state.cashPerDay.containsKey(dateString)) {
-          continue;
-        }
-        remaining += limit.value;
-      }
-      return remaining;
+      remaining += limit.value;
+    }
+    return remaining;
   }
 
   setState(Cash cash) {
     state = cash;
+    saveCashToStandardPersistence(state);
   }
 
   addCash(int amount, DateTime forDay) {
@@ -71,11 +112,28 @@ class CashNotifier extends StateNotifier<Cash> {
     String key = toDateString(forDay);
     cashPerDay[key] = amount + (cashPerDay[key] ?? 0);
     state = Cash(cashPerDay: cashPerDay);
+    saveCashToStandardPersistence(state);
   }
 
-  removeCash(int amount) {
-
+  removeCash(int amount, DateTime forDay) {
+    saveCashToStandardPersistence(state);
   }
 
+  saveCashToStandardPersistence(Cash cash) async {
+    await saveCashToPersistence(standardPersistenceInterface, cash);
+  }
 
+  saveCashToPersistence(
+      SettingsPersistenceInterface persistenceInterface, Cash cash) async {
+    persistenceInterface.saveMoneySpent(cash);
+  }
+
+  loadCashFromStandardPersistence() async {
+    await loadCashFromPersistence(standardPersistenceInterface);
+  }
+
+  loadCashFromPersistence(
+      SettingsPersistenceInterface persistenceInterface) async {
+    state = await persistenceInterface.loadMoneySpent();
+  }
 }
