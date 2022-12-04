@@ -36,6 +36,18 @@ class SettingsScreen extends ConsumerWidget {
       Widget cancelButton = TextButton(
         child: Text("Cancel"),
         onPressed: () {
+          ref.read(cashProvider.notifier).resetState();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 20),
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {},
+              ),
+              content: const Text("Removed all Expenditure Entries"),
+            ),
+          );
           Navigator.of(context).pop();
         },
       );
@@ -45,7 +57,6 @@ class SettingsScreen extends ConsumerWidget {
           String saveFile =
               "/storage/emulated/0/Download/MonetenMasterBackup_${DateTime.now().microsecondsSinceEpoch}.txt";
           settingsPersistence.saveMoneySpent(ref.read(cashProvider), saveFile);
-          Navigator.of(context).pop();
 
           ref.read(cashProvider.notifier).resetState();
 
@@ -59,6 +70,7 @@ class SettingsScreen extends ConsumerWidget {
               content: const Text("Removed all Expenditure Entries"),
             ),
           );
+          Navigator.of(context).pop();
         },
       );
 
