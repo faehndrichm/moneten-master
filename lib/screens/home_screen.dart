@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:simple_budget/entities/day.dart';
 import 'package:simple_budget/providers.dart';
 import 'package:simple_budget/screens/add_value_screen.dart';
 import 'package:simple_budget/screens/set_value_screen.dart';
@@ -15,9 +16,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
-
-// TODO implement setting so user can decide from which date on the money_spent should be counted, i.e. start at 12.8.2022 to start counting
-
 
 // TODO set currency
 
@@ -78,6 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   DateTime.now().add(Duration(days: -index));
               double spentToday = cash.cashPerDay[toDateString(selectedDate)] ?? 0;
               int currentDayOfMonth = selectedDate.day;
+
               double limit = dailyLimit.value +
                   ref
                       .read(cashProvider.notifier)
@@ -103,11 +102,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (currentDayOfMonth == 1)
+                          if (!selectedDate.isAfter(ref.read(limitProvider).beginCountDate.add(Duration(days: 1))))
                             const SizedBox(
                               width: 64,
                             ),
-                          if (currentDayOfMonth != 1)
+                          if (selectedDate.isAfter(ref.read(limitProvider).beginCountDate.add(Duration(days: 1))))
                             IconButton(
                               onPressed: () {
                                 pageViewController.animateToPage(index + 1,
