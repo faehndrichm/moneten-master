@@ -112,7 +112,7 @@ class CashNotifier extends StateNotifier<Cash> {
     }
 
     List<DateTime> days = [];
-    for (int i = 0; i <= forDay.difference(startDate).inDays; i++) {
+    for (int i = 0; i < forDay.difference(startDate).inDays; i++) {
       days.add(startDate.add(Duration(days: i)));
     }
 
