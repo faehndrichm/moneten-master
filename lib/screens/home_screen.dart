@@ -14,6 +14,10 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
+// TODO implement month selection
+// TODO implement click on current value for day opens up menu to change this value directly
+
+
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final limitController = TextEditingController();
   final pageViewController = PageController();
@@ -22,6 +26,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     var cash = ref.watch(cashProvider);
     var dailyLimit = ref.watch(limitProvider);
+
     limitController.text = dailyLimit.value.toString();
 
     return Scaffold(
