@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_budget/persistence/settings_persistence.dart';
+import 'package:simple_budget/persistence/settings_persistence_shared_pref.dart';
 import 'package:simple_budget/persistence/settings_persistence_interface.dart';
 
 import 'entities/limit.dart';
