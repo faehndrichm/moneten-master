@@ -17,9 +17,6 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-// TODO save as json file with file picker
-
-
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final limitController = TextEditingController();
   final pageViewController = PageController();
@@ -73,7 +70,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemBuilder: (BuildContext context, int index) {
               DateTime selectedDate =
                   DateTime.now().add(Duration(days: -index));
-              double spentToday = cash.cashPerDay[toDateString(selectedDate)] ?? 0;
+              double spentToday =
+                  cash.cashPerDay[toDateString(selectedDate)] ?? 0;
               int currentDayOfMonth = selectedDate.day;
 
               double limit = dailyLimit.value +
@@ -101,11 +99,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (!selectedDate.isAfter(ref.read(limitProvider).beginCountDate.add(Duration(days: 1))))
+                          if (!selectedDate.isAfter(ref
+                              .read(limitProvider)
+                              .beginCountDate
+                              .add(Duration(days: 1))))
                             const SizedBox(
                               width: 64,
                             ),
-                          if (selectedDate.isAfter(ref.read(limitProvider).beginCountDate.add(Duration(days: 1))))
+                          if (selectedDate.isAfter(ref
+                              .read(limitProvider)
+                              .beginCountDate
+                              .add(Duration(days: 1))))
                             IconButton(
                               onPressed: () {
                                 pageViewController.animateToPage(index + 1,
@@ -258,13 +262,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () => ref
-                              .read(cashProvider.notifier)
-                              .addCash(
-                                  1,
-                                  ref
-                                      .read(dayProvider.notifier)
-                                      .getCurrentDay()),
+                          onPressed: () => {
+                            ref.read(cashProvider.notifier).addCash(1,
+                                ref.read(dayProvider.notifier).getCurrentDay()),
+                            Navigator.pop(context)
+                          },
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -276,13 +278,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () => ref
-                              .read(cashProvider.notifier)
-                              .addCash(
-                                  2,
-                                  ref
-                                      .read(dayProvider.notifier)
-                                      .getCurrentDay()),
+                          onPressed: () => {
+                            ref.read(cashProvider.notifier).addCash(2,
+                                ref.read(dayProvider.notifier).getCurrentDay()),
+                            Navigator.pop(context)
+                          },
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -302,13 +302,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () => ref
-                              .read(cashProvider.notifier)
-                              .addCash(
-                                  5,
-                                  ref
-                                      .read(dayProvider.notifier)
-                                      .getCurrentDay()),
+                          onPressed: () => {
+                            ref.read(cashProvider.notifier).addCash(5,
+                                ref.read(dayProvider.notifier).getCurrentDay()),
+                            Navigator.pop(context)
+                          },
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -320,13 +318,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () => ref
-                              .read(cashProvider.notifier)
-                              .addCash(
-                                  10,
-                                  ref
-                                      .read(dayProvider.notifier)
-                                      .getCurrentDay()),
+                          onPressed: () => {
+                            ref.read(cashProvider.notifier).addCash(10,
+                                ref.read(dayProvider.notifier).getCurrentDay()),
+                            Navigator.pop(context)
+                          },
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -346,13 +342,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () => ref
-                              .read(cashProvider.notifier)
-                              .addCash(
-                                  20,
-                                  ref
-                                      .read(dayProvider.notifier)
-                                      .getCurrentDay()),
+                          onPressed: () => {
+                            ref.read(cashProvider.notifier).addCash(20,
+                                ref.read(dayProvider.notifier).getCurrentDay()),
+                            Navigator.pop(context)
+                          },
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -364,13 +358,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () => ref
-                              .read(cashProvider.notifier)
-                              .addCash(
-                                  50,
-                                  ref
-                                      .read(dayProvider.notifier)
-                                      .getCurrentDay()),
+                          onPressed: () => {
+                            ref.read(cashProvider.notifier).addCash(50,
+                                ref.read(dayProvider.notifier).getCurrentDay()),
+                            Navigator.pop(context)
+                          },
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
@@ -391,6 +383,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         ElevatedButton(
                           onPressed: () => {
+                            Navigator.pop(context),
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
