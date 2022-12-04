@@ -1,17 +1,25 @@
+import 'dart:io';
+
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_budget/helper.dart';
+import 'package:simple_budget/persistence/settings_persistence_json_file.dart';
 import 'package:simple_budget/providers.dart';
+
+import '../entities/cash.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settingsPersistence = SettingsPersistenceJsonFile();
+
     final limitController = TextEditingController();
     var limit = ref.watch(limitProvider);
 
@@ -22,6 +30,68 @@ class SettingsScreen extends ConsumerWidget {
 
     final currencyController = TextEditingController();
     currencyController.text = limit.currency;
+
+    void saveExpenditureToFile() async {
+      // set up the buttons
+      Widget cancelButton = TextButton(
+        child: Text("Cancel"),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      );
+      Widget continueButton = TextButton(
+        child: Text("Yes"),
+        onPressed: () {
+          String saveFile =
+              "/storage/emulated/0/Download/MonetenMasterBackup_${DateTime.now().microsecondsSinceEpoch}.txt";
+          settingsPersistence.saveMoneySpent(ref.read(cashProvider), saveFile);
+          Navigator.of(context).pop();
+
+          ref.read(cashProvider.notifier).resetState();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 20),
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {},
+              ),
+              content: const Text("Removed all Expenditure Entries"),
+            ),
+          );
+        },
+      );
+
+      // set up the AlertDialog
+      AlertDialog alert = AlertDialog(
+        title: Text("Backup Dialog"),
+        content: Text("Would you like to save a backup of your expenditures?"),
+        actions: [
+          cancelButton,
+          continueButton,
+        ],
+      );
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+
+    void loadExpenditureFromFile() async {
+      const params = OpenFileDialogParams(
+          dialogType: OpenFileDialogType.document,
+          sourceType: SourceType.photoLibrary);
+
+      final outputFile = await FlutterFileDialog.pickFile(params: params);
+
+      if (outputFile != null) {
+        Cash cash = await settingsPersistence.loadMoneySpent(outputFile);
+        ref.read(cashProvider.notifier).setState(cash);
+      }
+    }
 
     final textField = TextField(
         style: const TextStyle(fontSize: 18),
@@ -99,31 +169,38 @@ class SettingsScreen extends ConsumerWidget {
             showCurrencyName: true,
             showCurrencyCode: true,
             onSelect: (Currency currency) {
-              currencyController.text = currency.symbol; 
+              currencyController.text = currency.symbol;
               ref.read(limitProvider.notifier).setCurrency(currency.symbol);
             },
           );
         });
 
     final resetSpentButton = TextButton(
-      style: TextButton.styleFrom(
-        foregroundColor: Colors.redAccent,
-        backgroundColor: Colors.red
-      ),
-      onPressed: () => {
-        ref.read(cashProvider.notifier).resetState(),
-        ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: const Duration(seconds: 20),
-                action: SnackBarAction(
-                  label: 'OK',
-                  onPressed: () {},
+        style: TextButton.styleFrom(
+            foregroundColor: Colors.redAccent, backgroundColor: Colors.red),
+        onPressed: () => {saveExpenditureToFile()},
+        child: const Text('Reset All Days Spent',
+            style: TextStyle(fontSize: 18, color: Colors.white)));
+
+    final loadBackupSpentButton = TextButton(
+        style: TextButton.styleFrom(
+            foregroundColor: Colors.greenAccent, backgroundColor: Colors.green),
+        onPressed: () => {
+              loadExpenditureFromFile(),
+              // ref.read(cashProvider.notifier).resetState(),
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 20),
+                  action: SnackBarAction(
+                    label: 'OK',
+                    onPressed: () {},
+                  ),
+                  content: const Text("Succesfully loaded Backup Entries."),
                 ),
-                content: const Text("Removed all Expenditure Entries"),
-              ),
-            )
-    }, 
-    child: const Text('Reset All Days Spent', style: TextStyle(fontSize: 18, color: Colors.white)));
+              )
+            },
+        child: const Text('Load Expenditure Entries from Backup',
+            style: TextStyle(fontSize: 18, color: Colors.white)));
 
     return Scaffold(
         appBar: AppBar(
@@ -150,7 +227,9 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 10),
               textFieldCurrency,
               const SizedBox(height: 10),
-              resetSpentButton
+              resetSpentButton,
+              const SizedBox(height: 10),
+              loadBackupSpentButton
             ]));
   }
 }

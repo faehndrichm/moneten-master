@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme(
           bodyText2: TextStyle(fontSize: 20),
         )
-        
         ,
       ),
       home: const HomeScreen(title: 'Moneten Master'),
