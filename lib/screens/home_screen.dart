@@ -17,7 +17,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-// TODO set currency
+// TODO save as json file with file picker
+
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final limitController = TextEditingController();

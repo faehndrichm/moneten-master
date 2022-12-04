@@ -105,6 +105,26 @@ class SettingsScreen extends ConsumerWidget {
           );
         });
 
+    final resetSpentButton = TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.redAccent,
+        backgroundColor: Colors.red
+      ),
+      onPressed: () => {
+        ref.read(cashProvider.notifier).resetState(),
+        ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(seconds: 20),
+                action: SnackBarAction(
+                  label: 'OK',
+                  onPressed: () {},
+                ),
+                content: const Text("Removed all Expenditure Entries"),
+              ),
+            )
+    }, 
+    child: const Text('Reset All Days Spent', style: TextStyle(fontSize: 18, color: Colors.white)));
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -128,7 +148,9 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 10),
               textFieldBeginDate,
               const SizedBox(height: 10),
-              textFieldCurrency
+              textFieldCurrency,
+              const SizedBox(height: 10),
+              resetSpentButton
             ]));
   }
 }
