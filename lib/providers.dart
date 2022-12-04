@@ -129,6 +129,12 @@ class CashNotifier extends StateNotifier<Cash> {
     return remaining;
   }
 
+  resetState() {
+    state = Cash(cashPerDay: {});
+    
+    saveCashToStandardPersistence(state);
+  }
+
   setValue(DateTime date, double amount) {
     Cash temp = Cash(cashPerDay: state.cashPerDay);
     temp.cashPerDay[toDateString(date)] = amount;
