@@ -50,20 +50,25 @@ class LimitNotifier extends StateNotifier<Limit> {
   SettingsPersistenceInterface standardPersistenceInterface =
       SettingsPersistenceSharedPrefs();
 
-  LimitNotifier() : super(Limit(value: 50, beginCountDate: DateTime.now()));
+  LimitNotifier() : super(Limit(value: 50, beginCountDate: DateTime.now(), currency:"€"));
 
   setLimit(double value, DateTime beginCountDate) {
-    state = Limit(value: value, beginCountDate: beginCountDate);
+    state = Limit(value: value, beginCountDate: beginCountDate, currency: state.currency);
     saveLimitToStandardPersistence(state);
   }
 
   setStartDate(DateTime startDate) {
-    state = Limit(value: state.value, beginCountDate: startDate);
+    state = Limit(value: state.value, beginCountDate: startDate, currency: state.currency);
     saveLimitToStandardPersistence(state);
   }
 
   setLimitValue(double value) {
-    state = Limit(value: value, beginCountDate: state.beginCountDate);
+    state = Limit(value: value, beginCountDate: state.beginCountDate, currency: state.currency);
+    saveLimitToStandardPersistence(state);
+  }
+
+  setCurrency(String currency) {
+    state = Limit(value: state.value, beginCountDate: state.beginCountDate, currency: currency);
     saveLimitToStandardPersistence(state);
   }
 
