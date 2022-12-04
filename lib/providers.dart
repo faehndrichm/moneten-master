@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_budget/persistence/settings_persistence.dart';
@@ -49,10 +50,20 @@ class LimitNotifier extends StateNotifier<Limit> {
   SettingsPersistenceInterface standardPersistenceInterface =
       SettingsPersistenceSharedPrefs();
 
-  LimitNotifier() : super(Limit(value: 50));
+  LimitNotifier() : super(Limit(value: 50, beginCountDate: DateTime.now()));
 
-  setLimit(double value) async {
-    state = Limit(value: value);
+  setLimit(double value, DateTime beginCountDate) {
+    state = Limit(value: value, beginCountDate: beginCountDate);
+    saveLimitToStandardPersistence(state);
+  }
+
+  setStartDate(DateTime startDate) {
+    state = Limit(value: state.value, beginCountDate: startDate);
+    saveLimitToStandardPersistence(state);
+  }
+
+  setLimitValue(double value) {
+    state = Limit(value: value, beginCountDate: state.beginCountDate);
     saveLimitToStandardPersistence(state);
   }
 
@@ -85,20 +96,31 @@ class CashNotifier extends StateNotifier<Cash> {
     double remaining = 0;
 
     DateTime comparisonDate = forDay.add(const Duration(days: -1));
+    DateTime startDate = limit.beginCountDate;
+
     // If only current month should be counted then there needs to be a isAfter also
     var datesBefore = state.cashPerDay.keys
-        .where((element) => DateTime.parse(element).isBefore(comparisonDate));
+        .where((element) => DateTime.parse(element).isBefore(comparisonDate) && DateTime.parse(element).isAfter(startDate.add(const Duration(days: -1))));
+
     for (var day in datesBefore) {
       remaining += limit.value - (state.cashPerDay[day] ?? 0);
     }
 
-    for (int i = 1; i < forDay.day; i++) {
-      String dateString = toDateString(DateTime(forDay.year, forDay.month, i));
+    List<DateTime> days = [];
+    for (int i = 0; i <= forDay.difference(startDate).inDays; i++) {
+      days.add(startDate.add(Duration(days: i)));
+    }
+
+    // Go through all days from the begin date to the searched for day and add the remainder 
+    // for all days not already included before
+    for(DateTime day in days) {
+      String dateString = toDateString(day);
       if (state.cashPerDay.containsKey(dateString)) {
         continue;
       }
       remaining += limit.value;
     }
+
     return remaining;
   }
 
