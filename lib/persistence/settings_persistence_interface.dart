@@ -9,7 +9,7 @@ abstract class SettingsPersistenceInterface {
 
   void saveLimit(Limit limit) async {}
   Future<Limit> loadLimit() async {
-    return Limit(value: 0, beginCountDate: DateTime.now());
+    return Limit(value: 0, beginCountDate: DateTime.now(), currency: "€");
   }
 
   void saveMoneySpent(Cash cash) async {}

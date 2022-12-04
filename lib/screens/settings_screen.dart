@@ -1,3 +1,4 @@
+import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -18,6 +19,9 @@ class SettingsScreen extends ConsumerWidget {
 
     final dateController = TextEditingController();
     dateController.text = toDateStringUI(limit.beginCountDate);
+
+    final currencyController = TextEditingController();
+    currencyController.text = limit.currency;
 
     final textField = TextField(
         style: const TextStyle(fontSize: 18),
@@ -80,6 +84,27 @@ class SettingsScreen extends ConsumerWidget {
           }
         });
 
+    final textFieldCurrency = TextField(
+        style: const TextStyle(fontSize: 18),
+        controller: currencyController,
+        keyboardType: TextInputType.number,
+        decoration: const InputDecoration(
+            icon: Icon(Icons.money), //icon of text field
+            labelText: "Enter Currency" //label text of field
+            ),
+        onTap: () async {
+          var result = showCurrencyPicker(
+            context: context,
+            showFlag: true,
+            showCurrencyName: true,
+            showCurrencyCode: true,
+            onSelect: (Currency currency) {
+              currencyController.text = currency.symbol; 
+              ref.read(limitProvider.notifier).setCurrency(currency.symbol);
+            },
+          );
+        });
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -101,7 +126,9 @@ class SettingsScreen extends ConsumerWidget {
               ),
               textField,
               const SizedBox(height: 10),
-              textFieldBeginDate
+              textFieldBeginDate,
+              const SizedBox(height: 10),
+              textFieldCurrency
             ]));
   }
 }

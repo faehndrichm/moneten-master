@@ -4,5 +4,6 @@ class Limit {
   double value;
   // The date from which the current values should be calculated
   DateTime beginCountDate;
-  Limit({required this.value, required this.beginCountDate}); 
+  String currency;
+  Limit({required this.value, required this.beginCountDate, required this.currency}); 
 }

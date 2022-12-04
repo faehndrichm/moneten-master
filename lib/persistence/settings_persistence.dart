@@ -10,6 +10,7 @@ import 'package:simple_budget/persistence/settings_persistence_interface.dart';
 class SettingsPersistenceSharedPrefs implements SettingsPersistenceInterface {
   static const String limitPersistenceName = 'money_limit';
   static const String beginCountDatePersistenceName = 'begin_count_date';
+  static const String currencyPersistenceName = 'currency';
   static const double standardLimit = 50;
   static const String cashPersistenceName = 'cash_per_day';
 
@@ -18,19 +19,20 @@ class SettingsPersistenceSharedPrefs implements SettingsPersistenceInterface {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(limitPersistenceName, limit.value);
     await prefs.setString(beginCountDatePersistenceName, toDateString(limit.beginCountDate));
-  }
+    await prefs.setString(currencyPersistenceName, limit.currency);
+    }
 
   @override
   Future<Limit> loadLimit() async {
     final prefs = await SharedPreferences.getInstance();
     
-    Limit ret = Limit(value: standardLimit, beginCountDate: DateTime.now());
+    Limit ret = Limit(value: standardLimit, beginCountDate: DateTime.now(), currency: "€");
 
     try {
       
       String date = prefs.getString(beginCountDatePersistenceName) ?? "";
 
-      ret = Limit(value: prefs.getDouble(limitPersistenceName) ?? standardLimit, beginCountDate: fromDateString(date));
+      ret = Limit(value: prefs.getDouble(limitPersistenceName) ?? standardLimit, beginCountDate: fromDateString(date), currency: prefs.getString(currencyPersistenceName) ?? "€");
     }
     catch(_) {
      // do nothing 

@@ -33,6 +33,7 @@ dependencies:
   flutter_riverpod: ^1.0.3
   intl: ^0.17.0
   shared_preferences: ^2.0.15
+  currency_picker: ^2.0.13
 
 
 

@@ -19,9 +19,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 // TODO set currency
 
-
-// TODO implement month selection
-
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final limitController = TextEditingController();
   final pageViewController = PageController();
@@ -30,6 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     var cash = ref.watch(cashProvider);
     var dailyLimit = ref.watch(limitProvider);
+    String currency = dailyLimit.currency;
 
     limitController.text = dailyLimit.value.toString();
 
@@ -218,7 +216,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                 // Then close the drawer
                                               },
                                               child: Text(
-                                                '${cash.cashPerDay[toDateString(selectedDate)]?.toStringAsFixed(2) ?? 0}€ / ${limit.toStringAsFixed(2)}€',
+                                                '${cash.cashPerDay[toDateString(selectedDate)]?.toStringAsFixed(2) ?? 0}$currency / ${limit.toStringAsFixed(2)}$currency',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyText2,
@@ -270,8 +268,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
-                          child: const Text(
-                            '+1€',
+                          child: Text(
+                            '+1$currency',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -288,8 +286,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
-                          child: const Text(
-                            '+2€',
+                          child: Text(
+                            '+2$currency',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -314,8 +312,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
-                          child: const Text(
-                            '+5€',
+                          child: Text(
+                            '+5$currency',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -332,8 +330,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
-                          child: const Text(
-                            '+10€',
+                          child: Text(
+                            '+10$currency',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -358,8 +356,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
-                          child: const Text(
-                            '+20€',
+                          child: Text(
+                            '+20$currency',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
@@ -376,8 +374,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fixedSize: const Size(70, 70),
                             shape: const CircleBorder(),
                           ),
-                          child: const Text(
-                            '+50€',
+                          child: Text(
+                            '+50$currency',
                             style:
                                 TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
